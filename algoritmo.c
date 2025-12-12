@@ -32,7 +32,7 @@ void escreve_sol(int *sol, int C)
 }
 
 // Gera vizinho trocando um ponto escolhido com um não escolhido
-static void gera_vizinho(int a[], int b[], int C)
+/* static void gera_vizinho(int a[], int b[], int C)
 {
     // copia
     for (int i = 0; i < C; i++)
@@ -54,7 +54,7 @@ static void gera_vizinho(int a[], int b[], int C)
     b[p1] = 0;
     b[p2] = 1;
 }
-
+ */
 
 // Gera vizinho 2: troca DOIS pontos (mantém m fixo)
 void gera_vizinho2(int a[], int b[], int C)
