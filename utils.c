@@ -4,59 +4,61 @@
 #include <time.h>
 #include "utils.h"
 
-// Inicializa o gerador de números aleatórios
-void init_rand()
+/* ================= RNG ================= */
+
+void init_rand(void)
 {
-    srand((unsigned) time(NULL));
+    srand((unsigned)time(NULL));
 }
 
-// Inteiro aleatório uniforme [min, max]
 int random_l_h(int min, int max)
 {
     return min + rand() % (max - min + 1);
 }
 
-// Real aleatório [0,1]
-float rand_01()
+float rand_01(void)
 {
-    return ((float) rand()) / RAND_MAX;
+    return (float)rand() / (float)RAND_MAX;
 }
 
-// Lê ficheiro da instância
+/* ================= IO ================= */
+
 double* init_dados(char *nome, int *C, int *m)
 {
     FILE *f = fopen(nome, "r");
-    if (!f)
-    {
+    if (!f) {
         printf("Erro a abrir ficheiro %s\n", nome);
         exit(1);
     }
 
-    // primeira linha: C m
-    if (fscanf(f, " %d %d", C, m) != 2)
-    {
+    if (fscanf(f, " %d %d", C, m) != 2) {
         printf("Formato inválido na primeira linha.\n");
+        fclose(f);
         exit(1);
     }
 
-    // aloca matriz C x C de doubles
-    double *mat = malloc(sizeof(double) * (*C) * (*C));
-    if (!mat)
-    {
+    double *mat = (double*)malloc(sizeof(double) * (size_t)(*C) * (size_t)(*C));
+    if (!mat) {
         printf("Erro na alocacao de memoria da matriz.\n");
+        fclose(f);
         exit(1);
     }
 
-    // lê as distâncias (assumimos matriz completa C linhas, C colunas)
     for (int i = 0; i < *C; i++)
-    {
         for (int j = 0; j < *C; j++)
-        {
-            if (fscanf(f, " %lf", &mat[i * (*C) + j]) != 1)
-            {
-                printf("Erro a ler distancia [%d,%d]\n", i, j);
-                exit(1);
-            }
+            mat[i * (*C) + j] = 0.0;
+
+    /* Formato: e1 e2 50.2 */
+    char a[32], b[32];
+    double dist;
+
+    while (fscanf(f, " %31s %31s %lf", a, b, &dist) == 3) {
+        int ia = atoi(a + 1) - 1;  /* "e1" -> 0 */
+        int ib = atoi(b + 1) - 1;
+
+        if (ia >= 0 && ia < *C && ib >= 0 && ib < *C) {
+            mat[ia * (*C) + ib] = dist;
+            mat[ib * (*C) + ia] = dist;
         }
     }
 
